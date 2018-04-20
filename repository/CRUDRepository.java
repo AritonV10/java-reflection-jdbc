@@ -1,5 +1,13 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.vio.repository;
+
 import com.vio.db.config.ConnectionPool;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -9,6 +17,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author arito
  */
-public class CRUDReflection implements CRUD<Object>{
+public class CRUDReflection implements CRUD<Object, Object>{
 
     private final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance();
     
@@ -27,7 +36,7 @@ public class CRUDReflection implements CRUD<Object>{
     }
 
     @Override
-    public <U extends String> Object findById(U objectId) {
+    public Object findById(Object objectId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -207,8 +216,122 @@ public class CRUDReflection implements CRUD<Object>{
     }
 
     @Override
-    public <U extends String> void delete(U objectId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void delete(Object objectId) {
+        
+        String ob_1_0 = null;
+        Integer ob_2_0 = null;
+        Double ob_3_0 = null;
+        Float ob_4_0 = null;
+        Long ob_5_0 = null;
+        
+       
+        
+        Object ob = objectId.getClass();
+        if(ob instanceof String){
+            ob_1_0 = (String) ob;
+        }
+        if(ob instanceof Integer){
+            ob_2_0 = (Integer) ob;
+        }
+        if(ob instanceof Double){
+            ob_3_0 = (Double) ob;
+        }
+        if(ob instanceof Float){
+            ob_4_0 = (Float) ob;
+        }
+        if(ob instanceof Long){
+            ob_5_0 = (Long) ob;
+        }
+        
+        final String CLASS_NAME = com.vio.domain.Product.class.getSimpleName();
+        //final String CLASS_NAME = this.getClass().getSimpleName();
+        String table_name_ = null;
+        
+        // get the table name
+        DatabaseMetaData db = null;
+        PreparedStatement statement = null;
+        Connection connection = null;
+        ResultSet result = null;
+        String[] _table = null;
+            
+        try{
+                
+                String[] t_c = {"TABLE"};
+                int p = 0;
+                connection = CONNECTION_POOL.getConnection();
+                db = connection.getMetaData();
+                result = db.getTables(null, null, "%", t_c);
+                
+                _table = new String[10];
+                while(result.next()){
+                     
+                     // add the table names into the array
+                    _table[p] = result.getString(3);
+                    // increment the _table index
+                    p++;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            for(String s : _table){
+                if(CLASS_NAME.toLowerCase().contains(s.toLowerCase())){
+                    table_name_ = s;
+                    break;
+                }
+            }
+            // get the ID column name just in case It's not default to ID
+            String TABLE_ID_NAME = null;
+            try{
+               final String SELECT_QUERY = "SELECT * FROM " + table_name_;
+               statement = connection.prepareStatement(SELECT_QUERY);
+               result = statement.executeQuery();
+               ResultSetMetaData rsmd = result.getMetaData();
+               for(int i = 1; i < 2; i++){
+                   System.out.println(rsmd.getColumnName(i) + " COL NAME");
+                   TABLE_ID_NAME = rsmd.getColumnName(i);
+               }
+               
+            } catch (SQLException ex) {
+            Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+         
+            final String DELETE_QUERY = "DELETE FROM " + table_name_ + " WHERE " + TABLE_ID_NAME + "=" + getType(objectId);
+           
+            try{
+                statement = connection.prepareStatement(DELETE_QUERY);
+                statement.executeUpdate();
+            } catch (SQLException ex) {
+            Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+                CONNECTION_POOL.closeConnection(connection);
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            }
+    }
+   
+    private static Object getType(Object object){
+        
+        if(object instanceof String){
+            return (String) object.toString();
+        }
+        if(object instanceof Integer){
+            return (Integer) ((Integer) object).intValue();
+        }
+        if(object instanceof Double){
+            return (Double) ((Double) object).doubleValue();
+        }
+        if(object instanceof Float){
+            return (Float) ((Float) object).floatValue();
+        }
+        if(object instanceof Long){
+            return (Long) ((Long) object).longValue();
+        }
+        
+        return null;
     }
     
 }
