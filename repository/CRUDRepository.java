@@ -82,7 +82,6 @@ public class CRUDReflection implements CRUD<Object, Object>{
                 } catch (IllegalAccessException e){
                     e.printStackTrace();
                 }
-                
             }
             // the table name that matches the object class
             String DB_TABLE_NAME = null;
@@ -96,8 +95,7 @@ public class CRUDReflection implements CRUD<Object, Object>{
             ResultSet result = null;
             String[] _table = null;
            
-            try{
-                
+            try{  
                 String[] t_c = {"TABLE"};
                 int p = 0;
                 connection = CONNECTION_POOL.getConnection();
@@ -112,14 +110,9 @@ public class CRUDReflection implements CRUD<Object, Object>{
                     // increment the _table index
                     p++;
                 }
-                
-               
-                
             } catch (SQLException ex) {
                 Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
              // matching the table with the object's class name
              for(String s : _table){
                     if(object.getClass().getSimpleName().toLowerCase().contains(s.toLowerCase())){
@@ -127,7 +120,6 @@ public class CRUDReflection implements CRUD<Object, Object>{
                         break;
                     }
                 }
-            
             try{
                 final String QUERY = "SELECT * FROM " + DB_TABLE_NAME;
            
@@ -144,9 +136,7 @@ public class CRUDReflection implements CRUD<Object, Object>{
                     DB_TABLE_COLUMNS[k-2] = rsmd_.getColumnName(k);
                     db_table_columns_buffer.append(prefix_table);
                     prefix_table = ",";
-                    db_table_columns_buffer.append(rsmd_.getColumnName(k));
-                   
-                    
+                    db_table_columns_buffer.append(rsmd_.getColumnName(k));  
                 }
                  
             } catch (SQLException ex) {
@@ -195,26 +185,24 @@ public class CRUDReflection implements CRUD<Object, Object>{
                         m++;
                         continue;
                     }
-                    
                 }
-                
+                // execute the query
                 statement.executeUpdate();
-                
             } catch (SQLException ex) {
                 Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
+                // close the connection
                 CONNECTION_POOL.closeConnection(connection);
                 try {
+                    // close the statement & result
                     statement.close();
                     result.close();
                 } catch (SQLException ex) {
                     Logger.getLogger(CRUDReflection.class.getName()).log(Level.SEVERE, null, ex);
                 } 
             }
-            
         }
-        
-        
+   
         return object;
     }
 
@@ -232,8 +220,7 @@ public class CRUDReflection implements CRUD<Object, Object>{
         ResultSet result = null;
         String[] _table = null;
             
-        try{
-                
+         try{ 
                 String[] t_c = {"TABLE"};
                 int p = 0;
                 connection = CONNECTION_POOL.getConnection();
