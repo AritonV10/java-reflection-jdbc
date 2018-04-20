@@ -221,31 +221,6 @@ public class CRUDReflection implements CRUD<Object, Object>{
     @Override
     public void delete(Object objectId) {
         
-        String ob_1_0 = null;
-        Integer ob_2_0 = null;
-        Double ob_3_0 = null;
-        Float ob_4_0 = null;
-        Long ob_5_0 = null;
-        
-       
-        
-        Object ob = objectId.getClass();
-        if(ob instanceof String){
-            ob_1_0 = (String) ob;
-        }
-        if(ob instanceof Integer){
-            ob_2_0 = (Integer) ob;
-        }
-        if(ob instanceof Double){
-            ob_3_0 = (Double) ob;
-        }
-        if(ob instanceof Float){
-            ob_4_0 = (Float) ob;
-        }
-        if(ob instanceof Long){
-            ob_5_0 = (Long) ob;
-        }
-        
         final String CLASS_NAME = com.vio.domain.Product.class.getSimpleName();
         //final String CLASS_NAME = this.getClass().getSimpleName();
         String table_name_ = null;
