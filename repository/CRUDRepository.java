@@ -221,8 +221,8 @@ public class CRUDReflection implements CRUD<Object, Object>{
     @Override
     public void delete(Object objectId) {
         
-        final String CLASS_NAME = com.vio.domain.Product.class.getSimpleName();
-        //final String CLASS_NAME = this.getClass().getSimpleName();
+        //final String CLASS_NAME = com.vio.domain.Product.class.getSimpleName();
+        final String CLASS_NAME = this.getClass().getSimpleName();
         String table_name_ = null;
         
         // get the table name
