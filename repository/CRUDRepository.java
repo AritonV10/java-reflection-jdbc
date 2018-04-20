@@ -27,6 +27,9 @@ import java.util.logging.Logger;
  */
 public class CRUDReflection implements CRUD<Object, Object>{
 
+    /**
+     * See java-jdbc-demo for the class
+     */
     private final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance();
     
     
